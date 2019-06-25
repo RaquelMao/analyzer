@@ -20,7 +20,8 @@
                 <div class="description-head">
                     <button class="command-description" @click="openFile">命令说明</button>
                 </div>
-                <textarea class="command-show" v-model="command"></textarea>
+                <textarea class="command-show" v-model="command">
+                </textarea>
             </div>
             <div class="terminal">
                 <div class="terminal-head">
@@ -101,7 +102,11 @@
         scanView();
       },
       openFile() {
-        this.content = readFile('../files/命令说明');
+        if (process.platform === 'darwin') {
+          this.content = readFile('../files/description');
+        } else {
+          this.content = readFile('..\\files\\description');
+        }
         this.showDetails = true;
       },
       closeFile() {

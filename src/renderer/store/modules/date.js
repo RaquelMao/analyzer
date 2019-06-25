@@ -25,7 +25,12 @@ const date = {
      */
     InitDate({ commit }) {
       return new Promise((resolve, reject) => {
-        const datePath = path.resolve(__dirname, './../../../licence');
+        let datePath = path.resolve(__dirname, './../../../licence');
+        if (process.platform === 'darwin') {
+          datePath = path.resolve(__dirname, './../../../licence');
+        } else {
+          datePath = path.resolve(__dirname, '.\\..\\..\\..\\licence');
+        }
         fs.readFile(datePath, 'utf-8', (err, date) => {
           if (err) {
             reject(err);
