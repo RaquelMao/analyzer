@@ -21,9 +21,7 @@ function createWindow() {
     height: 602,
     useContentSize: true,
     width: 700,
-    frame: false,
     resizable: false,
-    // titleBarStyle: 'hidden',
   });
 
   mainWindow.loadURL(winURL);

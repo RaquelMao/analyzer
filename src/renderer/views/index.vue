@@ -14,7 +14,7 @@
                 <div class="search-title">源码目录/文件：</div>
                 <input v-model="filePath"/>
                 <button class="scan" @click="openDialog">浏览</button>
-                <button class="analyse">开始分析</button>
+                <button class="analyse" @click="analyse">开始分析</button>
             </div>
             <div class="description">
                 <div class="description-head">
@@ -24,9 +24,9 @@
             </div>
             <div class="terminal">
                 <div class="terminal-head">
-                    <button class="open-report">打开报告</button>
+                    <button class="open-report" @click="openReport">打开报告</button>
                 </div>
-                <textarea class="log"></textarea>
+                <textarea class="log" v-model="stderr"></textarea>
             </div>
         </div>
         <div v-if="showDetails" class="command-description-details">
@@ -38,8 +38,7 @@
 
 <script>
   import { generateToken, isFile, readFile } from '../utils/utility';
-  // import { saveDate } from '../utils/date';
-  const path = require('path');
+  import { scanBuild, scanView } from '../utils/shell';
 
   export default {
     name: 'index',
@@ -49,39 +48,58 @@
         date: '',
         content: '',
         showDetails: false,
+        shellObject: '',
+        stderr: '',
+        d: '', // 用来标注需要分析的对象是否为文件夹，如果是文件夹，在 scan-build 时需要特殊处理
       };
     },
-    mounted() {
-      console.log(3, this.$store);
-      this.$store.dispatch('UpdateDate')
-        .then((date) => {
-          console.log(date);
+    created() {
+      this.$store.dispatch('InitDate')
+        .then(() => {
+          this.date = this.$store.getters.expireDate;
         }).catch((e) => {
           console.log(e);
         });
-      // this.$store.dispatch('Test');
-      console.log(111, this.$store.getters.beginDate);
     },
     computed: {
-      command() {
-        let command = '';
-        if (this.filePath) {
-          if (this.filePath.length > 1) {
-            let files = '';
-            this.filePath.forEach((file) => {
-              files = `${files} ${path.basename(file)}`;
-            });
-            command = `smartrocket-analyze gcc -c ${files}`;
-          } else if (isFile(this.filePath[0])) {
-            command = `smartrocket-analyze gcc -c ${path.basename(this.filePath[0])}`;
-          } else {
-            command = 'smartrocket-analyze make';
+      command: {
+        get() {
+          let command = '';
+          if (this.filePath) {
+            if (this.filePath.length > 1) {
+              let files = '';
+              this.filePath.forEach((file) => {
+                files = `${files} ${file}`;
+              });
+              command = `smartrocket-analyze clang -c ${files}`;
+            } else if (isFile(this.filePath[0])) {
+              command = `smartrocket-analyze clang -c ${this.filePath[0]}`;
+            } else {
+              [this.d] = this.filePath;
+              command = 'smartrocket-analyze make';
+            }
           }
-        }
-        return command;
+          this.shellObject = command;
+          return command;
+        },
+        set(val) {
+          this.shellObject = val;
+        },
       },
     },
     methods: {
+      analyse() {
+        scanBuild(this.shellObject, this.d)
+          .then((stderr) => {
+            this.stderr = stderr;
+          })
+          .catch((err) => {
+            this.stderr = err;
+          });
+      },
+      openReport() {
+        scanView();
+      },
       openFile() {
         this.content = readFile('../files/命令说明');
         this.showDetails = true;
