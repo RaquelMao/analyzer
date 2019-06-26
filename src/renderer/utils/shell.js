@@ -7,12 +7,7 @@
 const shell = require('shelljs');
 const path = require('path');
 
-let cwd = path.join(process.cwd(), '/checker-279/bin/scan-build');
-if (process.platform === 'darwin') {
-  cwd = path.join(process.cwd(), '/checker-279/bin/scan-build');
-} else {
-  cwd = path.join(process.cwd(), '\\checker-279\\bin\\scan-build');
-}
+const cwd = path.join(process.cwd(), '/checker-279/bin/scan-build');
 let openReportsCommand = '';
 
 /**
@@ -30,7 +25,7 @@ export function scanBuild(o, d) {
     if (process.platform === 'darwin') {
       scanBuildPath = `./${path.relative(d, cwd)}`;
     } else {
-      scanBuildPath = `.\\${path.relative(d, cwd)}`;
+      scanBuildPath = 'scan-build --use-analyzer="C:\\Program Files\\LLVM\\bin\\clang.exe"';
     }
     const command = o.replace(/smartrocket-analyze/, scanBuildPath);
     shell.exec(command, (err, stdout, stderr) => {
@@ -57,7 +52,7 @@ export function scanView() {
     } else {
       shell.cd('checker-279\\bin');
     }
-    const repValue = process.platform === 'darwin' ? './scan-view' : '.\\scan-view';
+    const repValue = process.platform === 'darwin' ? './scan-view' : 'scan-view';
     const command = openReportsCommand.substring(start, end).replace(/scan-view/, repValue);
     shell.exec(command, (err, stdout, stderr) => {
       if (err) {

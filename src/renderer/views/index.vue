@@ -41,6 +41,8 @@
   import { generateToken, isFile, readFile } from '../utils/utility';
   import { scanBuild, scanView } from '../utils/shell';
 
+  const path = require('path');
+
   export default {
     name: 'index',
     data() {
@@ -103,9 +105,10 @@
       },
       openFile() {
         if (process.platform === 'darwin') {
-          this.content = readFile('../files/description');
+          // this.content = readFile('../../../static/description');
+          this.content = readFile(path.join(__static, '/description'));
         } else {
-          this.content = readFile('..\\files\\description');
+          this.content = readFile(path.join(__static, '\\description'));
         }
         this.showDetails = true;
       },
