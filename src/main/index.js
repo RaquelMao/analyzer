@@ -47,7 +47,7 @@ app.on('activate', () => {
 
 ipcMain.on('open-dialog', (event, token) => {
   setTimeout(() => {
-    dialog.showOpenDialog(mainWindow, { properties: ['openDirectory', 'openFile', 'multiSelections'] }, (filePath) => {
+    dialog.showOpenDialog(mainWindow, { properties: ['openFile', 'multiSelections'] }, (filePath) => {
       event.sender.send('path', filePath, token);
     });
   }, 30);

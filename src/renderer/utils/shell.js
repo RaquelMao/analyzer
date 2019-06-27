@@ -7,8 +7,8 @@
 const shell = require('shelljs');
 const path = require('path');
 
-const cwd = path.join(process.cwd(), '/checker-279/bin/scan-build');
-const cwdWin = path.join(process.cwd(), '\\LLVMS\\bin\\clang.exe');
+const cwd = path.join(process.cwd(), path.join(__static, '/checker-279/bin/scan-build'));
+const cwdWin = path.join(process.cwd(), path.join(__static, '\\LLVMS\\bin\\clang.exe'));
 let openReportsCommand = '';
 
 /**
@@ -22,10 +22,15 @@ export function scanBuild(o, d) {
     if (d) {
       shell.cd(d);
     }
-    let scanBuildPath = `./${path.relative(d, cwd)}`;
+    let scanBuildPath = `/${path.relative(d, cwd)}`;
     if (process.platform === 'darwin') {
-      scanBuildPath = `./${path.relative(d, cwd)}`;
+      scanBuildPath = `/${path.relative(d, cwd)}`;
     } else {
+      try {
+        shell.cd(path.join(process.cwd(), path.join(__static, '\\LLVMS\\bin')));
+      } catch (e) {
+        console.log(e);
+      }
       scanBuildPath = `scan-build --use-analyzer="${cwdWin}"`;
     }
     const command = o.replace(/smartrocket-analyze/, scanBuildPath);
@@ -49,9 +54,9 @@ export function scanView() {
     const end = openReportsCommand.indexOf('to examine') - 2;
 
     if (process.platform === 'darwin') {
-      shell.cd('checker-279/bin');
+      shell.cd(path.join(__static, 'checker-279/bin'));
     } else {
-      shell.cd('checker-279\\bin');
+      shell.cd(path.join(__static, '\\LLVMS\\bin'));
     }
     const repValue = process.platform === 'darwin' ? './scan-view' : 'scan-view';
     const command = openReportsCommand.substring(start, end).replace(/scan-view/, repValue);

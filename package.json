@@ -19,6 +19,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
+    "asar": false,
     "productName": "analyzer",
     "appId": "com.raquel.analyzer",
     "directories": {

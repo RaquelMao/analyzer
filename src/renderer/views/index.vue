@@ -31,6 +31,7 @@
             </div>
         </div>
         <div v-if="showDetails" class="command-description-details">
+            {{ cc }}
             <textarea v-model="content"></textarea>
             <button class="close" @click="closeFile">关闭</button>
         </div>
@@ -54,6 +55,7 @@
         shellObject: '',
         stderr: '',
         d: '', // 用来标注需要分析的对象是否为文件夹，如果是文件夹，在 scan-build 时需要特殊处理
+        cc: '',
       };
     },
     created() {
@@ -104,8 +106,8 @@
         scanView();
       },
       openFile() {
+        this.cc = path.join(__static, '/description');
         if (process.platform === 'darwin') {
-          // this.content = readFile('../../../static/description');
           this.content = readFile(path.join(__static, '/description'));
         } else {
           this.content = readFile(path.join(__static, '\\description'));
